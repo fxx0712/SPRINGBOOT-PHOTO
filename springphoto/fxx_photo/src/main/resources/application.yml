@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: fxx_photo
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/springphoto?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false&characterEncoding=utf8
+    username: root
+    password: 123456
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8080/eureka/

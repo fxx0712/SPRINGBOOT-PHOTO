@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>photo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #search-input {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #search-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #search-button:hover {
+            background-color: #0056b3;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .image-list {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .image-item {
+            flex-basis: 25%;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .image-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .buy-button {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .image-item {
+            margin: 10px;
+            text-align: center;
+            position: relative;
+        }
+
+        .image-item img {
+            width: 264px;
+            height: 263px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .image-item .image-overlay {
+            position: absolute;
+            bottom: -38px;
+            left: 38px;
+            right: 36px;
+            display: flex;
+            justify-content: space-evenly;
+            padding: -2px;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .image-item .image-overlay .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .image-item .image-overlay button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .image-item .image-overlay button:hover {
+            background-color: #0056b3;
+        }
+
+        .image-item .image-overlay p {
+            margin-bottom: 0;
+            padding: 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 36px;
+            font-weight: bold;
+            color: #98b8da;
+            text-transform: uppercase;
+        }
+
+        .separator {
+            border: none;
+            height: 1px;
+            background-color: #ccc;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+
+        .no-images {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            font-style: italic;
+            color: #999;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="search-form">
+        <input type="text" id="search-input" placeholder="请输入图片名称">
+        <button id="search-button">搜索</button>
+
+    </div>
+    <div class="container">
+        <form class="form-group" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="image" class="form-label">选择图片</label>
+                <input type="file" class="form-control" name="image" id="image">
+            </div>
+            <button class="btn" type="submit">上传图片</button>
+        </form>
+    </div>
+    <h1>PHOTO</h1>
+    <hr class="separator">
+
+    <div class="image-container">
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <script>
+        // 监听图片上传表单提交事件
+        $('form').on('submit', function (event) {
+            event.preventDefault();
+
+            var formData = new FormData(); // 创建FormData对象
+            var imageFile = $('#image')[0].files[0]; // 获取选择的图片文件
+            console.log(imageFile)
+            formData.append('image', imageFile); // 将图片文件添加到FormData对象
+
+            $.ajax({
+                url: 'http://127.0.0.1:8081/upload', // 替换为后端接收上传图片的URL
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert("添加图片成功")
+                    console.log(response)
+                    location.reload();
+                    console.log("图片发送成功", response)
+                    // 图片上传成功的处理逻辑
+                },
+                error: function (xhr) {
+                    alert("添加图片失败了")
+                    console.log("失败啦！！！！");
+                    console.log(xhr.responseText);  // 输出错误消息
+                }
+
+            });
+        });
+
+        $(document).ready(function () {
+            // 获取所有图片
+            $.ajax({
+                url: 'http://127.0.0.1:8081/',
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var imageContainer = $('.image-container');
+                    imageContainer.empty();
+
+                    $.each(data, function (index, image) {
+                        const imageUrl = image.url;
+                        const parts = imageUrl.split('/');
+                        const imageNameWithExtension = parts[parts.length - 1];
+                        const imageName = imageNameWithExtension.substring(0, imageNameWithExtension.lastIndexOf('.'));
+
+                        var imageItem = $('<div>').addClass('image-item');
+                        var imageElement = $('<img>').attr('src', image.url);
+
+                        var overlay = $('<div>').addClass('image-overlay');
+                        var buttonContainer = $('<div>').addClass('button-container');
+
+                        var button1 = $('<button>').text('重新上传');
+                        var button2 = $('<button>').text('下架');
+
+                        button2.on('click', function () {
+                            deleteImage(image.id);
+                        });
+                        button1.on('click', function () {
+                            console.log("hello")
+                            // 触发选择文件按钮的点击事件
+                            $('#image').click();
+                            // 监听选择文件按钮的change事件
+                            $('#image').on('change', function (event) {
+                                var selectedFile = event.target.files[0];
+                                if (selectedFile) {
+                                    console.log(selectedFile);
+                                    var imageData = new FormData();
+                                    imageData.append('id', image.id); // 图片的唯一标识符
+                                    imageData.append('image', selectedFile); // 选择的新图片文件
+
+
+                                    // 发送请求到后端
+                                    $.ajax({
+                                        url: 'http://127.0.0.1:8081/update/' + image.id,
+                                        method: 'POST',
+                                        data: imageData, // 使用FormData对象发送文件数据
+                                        processData: false, // 禁用数据处理
+                                        contentType: false, // 禁用默认的Content-Type头部
+                                        success: function (response) {
+                                            // 图片更新成功的处理逻辑
+                                            console.log('Image updated successfully:', response);
+                                            location.reload();
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error('Update request failed with status:', status);
+                                        }
+                                    });
+                                }
+                            });
+
+                        });
+
+
+                        buttonContainer.append(button1, button2);
+                        overlay.append(buttonContainer);
+
+                        var imageNames = $('<p>').text(imageName + ".jpg");
+                        overlay.append(imageNames);
+
+                        imageItem.append(imageElement, overlay);
+                        imageContainer.append(imageItem);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Request failed with status:', status);
+                }
+            });
+        });
+
+        function deleteImage(imageId) {
+            $.ajax({
+                url: 'http://127.0.0.1:8081/delete',
+                method: 'DELETE',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({ id: imageId }),
+                success: function (response) {
+                    console.log('Image deleted successfully:', response);
+                    alert("删除图片成功")
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Delete request failed with status:', status);
+                }
+            });
+        }
+        function update(imageId) {
+        }
+
+        $(document).ready(function () {
+            // 搜索按钮点击事件处理程序
+            $('#search-button').on('click', function () {
+                var searchKeyword = $('#search-input').val();
+                searchImages(searchKeyword);
+            });
+
+            // 输入框回车键事件处理程序
+            $('#search-input').on('keypress', function (e) {
+                if (e.which === 13) {
+                    var searchKeyword = $('#search-input').val();
+                    searchImages(searchKeyword);
+                }
+            });
+
+            // 搜索图片
+            function searchImages(keyword) {
+                $.ajax({
+                    url: 'http://127.0.0.1:8081/image/search',
+                    method: 'GET',
+                    dataType: 'json',
+                    data: {
+                        name: keyword
+                    },
+                    success: function (response) {
+                        // 处理搜索成功的逻辑
+                        console.log('Images found:', response);
+
+                        var imageContainer = $('.image-container');
+                        imageContainer.empty();
+
+                        if (response.length > 0) {
+                            $.each(response, function (index, image) {
+                                const imageUrl = image.url;
+                                const parts = imageUrl.split('/');
+                                const imageNameWithExtension = parts[parts.length - 1];
+                                const imageName = imageNameWithExtension.substring(0, imageNameWithExtension.lastIndexOf('.'));
+
+                                var imageItem = $('<div>').addClass('image-item');
+                                var imageElement = $('<img>').attr('src', image.url);
+
+                                var overlay = $('<div>').addClass('image-overlay');
+                                var buttonContainer = $('<div>').addClass('button-container');
+
+                                var button1 = $('<button>').text('重新上传');
+                                var button2 = $('<button>').text('删除');
+
+                                button2.on('click', function () {
+                                    deleteImage(image.id);
+                                });
+
+
+
+                                buttonContainer.append(button1, button2);
+                                overlay.append(buttonContainer);
+
+                                var imageNames = $('<p>').text(imageName + ".jpg");
+                                overlay.append(imageNames);
+
+                                imageItem.append(imageElement, overlay);
+                                imageContainer.append(imageItem);
+                            });
+                        } else {
+                            // 如果没有搜索结果，显示相应提示消息
+                            imageContainer.text('No images found.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Search request failed with status:', status);
+                    }
+                });
+            }
+        });
+
+
+
+    </script>
+
+</body>
+
+</html>

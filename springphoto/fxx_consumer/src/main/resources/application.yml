@@ -1,0 +1,12 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: fxx_consumer
+
+eureka:
+  client:
+    serviceUrl:
+        defaultZone: http://localhost:8080/eureka/
+
